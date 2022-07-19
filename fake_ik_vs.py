@@ -1,6 +1,5 @@
 import numpy as np
-import pandas as pd
-from model import *
+from model.machine_learning_model import *
 
 # Classification
 fake_data = pd.read_excel('ik_fake.xlsx', index_col=0)

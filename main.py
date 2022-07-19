@@ -3,11 +3,7 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import numpy as np
-import pandas as pd
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
-import copy
-from model import *
+from model.machine_learning_model import *
 
 
 if __name__ == '__main__':
@@ -20,7 +16,7 @@ if __name__ == '__main__':
 
     raw_x_train, raw_x_test, raw_y_train, raw_y_test = create_train_test_dataset(X, y1)
     model_list = ['LR', 'RF']
-    result = comparison(model_list, raw_x_train, raw_x_test, raw_y_train, raw_y_test)
+    result = comparison_classification(model_list, raw_x_train, raw_x_test, raw_y_train, raw_y_test)
 
     df_result = pd.DataFrame(result, columns=['Method', 'Accuracy'])
     print(df_result)

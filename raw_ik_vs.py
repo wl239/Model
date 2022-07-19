@@ -1,23 +1,29 @@
 import numpy as np
-import pandas as pd
-from model import *
+from model.machine_learning_model import *
+from model.ols import *
 
 raw_data = pd.read_csv('cleaned_original_ik_data.csv', index_col=0)
 raw_data.replace([np.inf, -np.inf], np.nan, inplace=True)
 raw_data = raw_data.dropna(axis=0, how='any').reset_index(drop=True)
 raw_data['lnVOLUME'] = np.log(raw_data['VOLUME'])
 raw_data.drop(['VOLUME'], axis=1, inplace=True)
-normalized_raw_data = norm_standard(raw_data)
 
+# ols
+y = raw_data['CONC'].values
+x = raw_data.drop(['CONC'], axis=1, inplace=False).values
+pred, print_ols = build_ordinary_least_square(x, y)
+save_as_png(print_ols, 'raw_ik')
+
+normalized_raw_data = norm_standard(raw_data)
 # y1 -- regression
 y1 = normalized_raw_data.iloc[:, 3].values
 X1 = normalized_raw_data.drop(3, axis=1, inplace=False).values
 
 # y2 and y3 -- classification
 y2 = raw_data['S'].values
-X2 = norm_standard(raw_data.drop(['CONC', 'E', 'F'], axis=1, inplace=False)).values
+X2 = norm_standard(raw_data.drop(['CONC', 'E', 'F', 'B', 'S'], axis=1, inplace=False)).values
 y3 = raw_data['F'].values
-X3 = norm_standard(raw_data.drop(['CONC', 'B', 'S'], axis=1, inplace=False)).values
+X3 = norm_standard(raw_data.drop(['CONC', 'B', 'S', 'E', 'F'], axis=1, inplace=False)).values
 
 # regression
 raw_x_train_1, raw_x_test_1, raw_y1_train, raw_y1_test = create_train_test_dataset(X1, y1)
