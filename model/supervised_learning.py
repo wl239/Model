@@ -5,6 +5,9 @@ from sklearn.metrics import mean_squared_error, accuracy_score, r2_score
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.svm import SVC, SVR
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.metrics import classification_report
+from sklearn.model_selection import cross_val_score
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
@@ -57,6 +60,14 @@ def build_svm_regression(x_train, x_test, y_train, y_test):
     return SVM_regression, mse
 
 
+def build_knn_regression(x_train, x_test, y_train, y_test):
+    knn_regression = KNeighborsRegressor(n_neighbors=5, weights='uniform')
+    knn_regression.fit(x_train, y_train)
+    y_pred = knn_regression.predict(x_test)
+    mse = mean_squared_error(y_test, y_pred)
+    return knn_regression, mse
+
+
 def comparison_regression(model_list, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
@@ -66,6 +77,8 @@ def comparison_regression(model_list, x_train, x_test, y_train, y_test):
             linear_regression, mse = build_linear_regression(x_train, x_test, y_train, y_test)
         elif x == 'SVM':
             svm_regression, mse = build_svm_regression(x_train, x_test, y_train, y_test)
+        elif x == 'KNN':
+            knn_regression, mse = build_knn_regression(x_train, x_test, y_train, y_test)
         else:
             continue
         result.append([x, mse])
@@ -116,6 +129,16 @@ def build_svm_classifier(x_train, x_test, y_train, y_test):
     return SVM_regression, accuracy
 
 
+# https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
+def build_knn_classifier(x_train, x_test, y_train, y_test):
+    knn_model = KNeighborsClassifier(n_neighbors=5, weights='uniform')
+    knn_model.fit(x_train, y_train)
+    y_pred = knn_model.predict(x_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+    return knn_model, accuracy, report
+
+
 def comparison_classification(model_list, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
@@ -124,7 +147,9 @@ def comparison_classification(model_list, x_train, x_test, y_train, y_test):
         elif x == 'LR':
             logistic_model, accuracy = build_logistic_regression(x_train, x_test, y_train, y_test)
         elif x == 'SVM':
-            svm_regression, accuracy = build_svm_classifier(x_train, x_test, y_train, y_test)
+            svm_classifier, accuracy = build_svm_classifier(x_train, x_test, y_train, y_test)
+        elif x == 'KNN':
+            knn_classifier, accuracy, report = build_knn_classifier(x_train, x_test, y_train, y_test)
         else:
             continue
         result.append([x, accuracy])

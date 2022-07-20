@@ -1,5 +1,5 @@
 import numpy as np
-from model.machine_learning_model import *
+from model.supervised_learning import *
 
 # Classification
 fake_data = pd.read_excel('ek_fake.xlsx', index_col=0)

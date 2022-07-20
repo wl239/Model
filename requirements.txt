@@ -1,0 +1,7 @@
+statsmodels
+matplotlib
+dataframe_image
+pandas
+numpy
+scikit-learn
+scipy
