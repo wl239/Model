@@ -1,14 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, accuracy_score, r2_score
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.svm import SVC, SVR
-
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 
 def standard(df):
@@ -18,10 +10,10 @@ def standard(df):
     return (df - mu) / sigma
 
 
-def create_train_test_dataset(x, y):
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)  # 70% training 30% test
-    return x_train, x_test, y_train, y_test
-
-
-
-
+def build_principal_component_analysis(df, n_component):
+    pca = PCA(n_components=n_component)
+    principalComponents = pca.fit_transform(df)
+    principal_df = pd.DataFrame(data=principalComponents)
+    t_value_array = pca.explained_variance_ratio_
+    t_value = np.sum(t_value_array)
+    return principalComponents, principal_df, t_value
