@@ -40,7 +40,8 @@ def build_linear_regression(x_train, x_test, y_train, y_test):
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
-    return lr_model, mse
+    r_2 = r2_score(y_test, y_pred)
+    return lr_model, mse, r_2
 
 
 def build_random_forest_regression(x_train, x_test, y_train, y_test):
@@ -48,7 +49,8 @@ def build_random_forest_regression(x_train, x_test, y_train, y_test):
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
-    return rf_model, mse
+    r_2 = r2_score(y_test, y_pred)
+    return rf_model, mse, r_2
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
@@ -57,7 +59,8 @@ def build_svm_regression(x_train, x_test, y_train, y_test):
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
-    return SVM_regression, mse
+    r_2 = r2_score(y_test, y_pred)
+    return SVM_regression, mse, r_2
 
 
 def build_knn_regression(x_train, x_test, y_train, y_test):
@@ -65,23 +68,24 @@ def build_knn_regression(x_train, x_test, y_train, y_test):
     knn_regression.fit(x_train, y_train)
     y_pred = knn_regression.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
-    return knn_regression, mse
+    r_2 = r2_score(y_test, y_pred)
+    return knn_regression, mse, r_2
 
 
 def comparison_regression(model_list, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
         if x == 'RF':
-            rf_regression, mse = build_random_forest_regression(x_train, x_test, y_train, y_test)
+            rf_regression, mse, r_2 = build_random_forest_regression(x_train, x_test, y_train, y_test)
         elif x == 'LR':
-            linear_regression, mse = build_linear_regression(x_train, x_test, y_train, y_test)
+            linear_regression, mse, r_2 = build_linear_regression(x_train, x_test, y_train, y_test)
         elif x == 'SVM':
-            svm_regression, mse = build_svm_regression(x_train, x_test, y_train, y_test)
+            svm_regression, mse, r_2 = build_svm_regression(x_train, x_test, y_train, y_test)
         elif x == 'KNN':
-            knn_regression, mse = build_knn_regression(x_train, x_test, y_train, y_test)
+            knn_regression, mse, r_2 = build_knn_regression(x_train, x_test, y_train, y_test)
         else:
             continue
-        result.append([x, mse])
+        result.append([x, mse, r_2])
     return result
 
 

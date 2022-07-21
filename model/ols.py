@@ -10,8 +10,19 @@ def build_ordinary_least_square(x, y):
     return pred, ols_model.summary()
 
 
-def save_text_as_png(print_model, name):
+def save_knn_output_as_png(print_model, name):
     plt.rc('figure', figsize=(10, 4))
+    # plt.text(0.01, 0.05, str(print_model), {'fontsize': 12})   # old approach
+    plt.text(0.01, 0.05, str(print_model), {'fontsize': 12}, fontproperties='monospace')
+      # approach improved by OP -> monospace!
+    plt.axis('off')
+    # plt.tight_layout()
+    plt.savefig(str(name) + '_output.png')
+    plt.close()
+
+
+def save_text_as_png(print_model, name):
+    plt.rc('figure', figsize=(10, 12))
     # plt.text(0.01, 0.05, str(print_model), {'fontsize': 12})   # old approach
     plt.text(0.01, 0.05, str(print_model), {'fontsize': 12}, fontproperties='monospace')
       # approach improved by OP -> monospace!
