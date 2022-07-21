@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, accuracy_score, r2_score
@@ -26,8 +27,14 @@ def norm_standard(df):
     # return (df - mu) / sigma
     scaler = StandardScaler()
     data2 = pd.DataFrame(scaler.fit_transform(data1))
-
     return data2
+
+
+def standard(df):
+    # Standardization
+    mu = np.mean(df, axis=0)
+    sigma = np.std(df, axis=0)
+    return (df - mu) / sigma
 
 
 def create_train_test_dataset(x, y):

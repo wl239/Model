@@ -49,8 +49,8 @@ save_text_as_png(print_ols, 'gaussian_ik')
 normalized_synthetic_data = norm_standard(data_after_dummy)
 
 # Regression: y is concentration rate, x -- other variables
-y1 = normalized_synthetic_data.iloc[:, 3].values
-X1 = normalized_synthetic_data.drop(3, axis=1, inplace=False).values
+y1 = normalized_synthetic_data.iloc[:, 2].values
+X1 = normalized_synthetic_data.drop(2, axis=1, inplace=False).values
 
 # Classification
 # Label y1 -- Buy Sell Type: 'S' and 'B'. 'S' is 1, 'B' is 0

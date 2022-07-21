@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from model.supervised_learning import *
 from model.ols import *
@@ -40,11 +42,11 @@ save_text_as_png(print_ols, 'raw_ik')
 
 # Machine Learning
 # Data need to be standardized
-normalized_raw_data = (data_after_dummy)
+normalized_raw_data = norm_standard(data_after_dummy)
 
 # Regression: y is concentration rate, x -- other variables
-y1 = normalized_raw_data.iloc[:, 3].values
-X1 = normalized_raw_data.drop(3, axis=1, inplace=False).values
+y1 = normalized_raw_data.iloc[:, 2].values
+X1 = normalized_raw_data.drop(2, axis=1, inplace=False).values  # column number: 3
 
 # Classification
 # Label y1 -- Buy Sell Type: 'S' and 'B'. 'S' is 1, 'B' is 0
