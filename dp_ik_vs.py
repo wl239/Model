@@ -9,10 +9,12 @@ from model.data_visualize import *
 # end_time = time.time()
 # duration = end_time - start_time
 
-df = pd.read_excel('ik.xlsx')      # <================================================================================ CHANGE !!!
+df = pd.read_excel('dp_ik_data.xlsx')      # <================================================================================ CHANGE !!!
 cleaned_df = clean_data(df)
+print(cleaned_df.info())
+print(cleaned_df)
 
-file_path = './image/raw_ik/raw_ik'   # <================================================================================ CHANGE !!!
+file_path = './image/dp_ik/dp_ik'   # <================================================================================ CHANGE !!!
 get_correlation_matrix(cleaned_df, file_path + '_corr.png')
 
 # Observe Correlation Matrix
@@ -22,8 +24,8 @@ df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
 # OLS Estimators
 x_ols, y_ols = create_ols_variables(df_without_collinear)  # Create OLS variables
 pred, ols_report = build_ordinary_least_square(x_ols, y_ols)  # OLS regression
-save_report_as_png(ols_report, 'raw_ik')  # Save ols summary as a picture   # <================================================================================ CHANGE !!!
-save_report_as_text(ols_report, 'raw_ik')  # Save ols summary as a text     # <================================================================================ CHANGE !!!
+save_report_as_png(ols_report, 'dp_ik')  # Save ols summary as a picture   # <================================================================================ CHANGE !!!
+save_report_as_text(ols_report, 'dp_ik')  # Save ols summary as a text     # <================================================================================ CHANGE !!!
 
 
 # Supervised Learning
@@ -49,7 +51,7 @@ x_equity_train, x_equity_test, y_equity_train, y_equity_test = create_train_test
 
 # model_list = ['LR']
 model_list = ['LR', 'RF', 'SVM', 'KNN']
-file_name = 'raw_ik'                                   # <================================================================================ CHANGE !!!
+file_name = 'dp_ik'                                   # <================================================================================ CHANGE !!!
 result1 = comparison_regression(model_list, file_name, x_reg, y_reg, x_reg_train, x_reg_test, y_reg_train, y_reg_test)
 result2 = comparison_classification(model_list, file_name, 'buy', x_buy_class, y_buy_class, x_buy_train, x_buy_test, y_buy_train, y_buy_test)
 result3 = comparison_classification(model_list, file_name, 'equity', x_equity_class, y_equity_class, x_equity_train, x_equity_test, y_equity_train, y_equity_test)

@@ -13,6 +13,8 @@ from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
+from model.data_visualize import *
+
 
 def norm_standard(df):
     # Normalization
@@ -39,7 +41,7 @@ def standard(df):
 
 def create_regression_variables(df):
     y = df.iloc[:, 1].values
-    x = df.drop(2, axis=1, inplace=False).values  # 'CONC' column number: 1
+    x = df.drop(1, axis=1, inplace=False).values  # 'CONC' column number: 1
     return x, y
 
 
@@ -50,77 +52,73 @@ def create_classification_variables(df, label_name):
 
 
 def create_train_test_dataset(x, y):
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)  # 70% training 30% test
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)  # 70% training 30% test
     return x_train, x_test, y_train, y_test
 
 
-def build_linear_regression(x_train, x_test, y_train, y_test):
-    lr_model = linear_model.LinearRegression(fit_intercept=True, copy_X=True, n_jobs=None)
+def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
+    lr_model = linear_model.Ridge(fit_intercept=True, copy_X=True)
+    scores = cross_val_score(lr_model, x, y, cv=10)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
-    mse = mean_squared_error(y_test, y_pred)
-    r_2 = r2_score(y_test, y_pred)
-    return lr_model, y_pred, mse, r_2
+    return lr_model, y_pred, scores.mean()
 
 
-def build_random_forest_regression(x_train, x_test, y_train, y_test):
+def build_random_forest_regression(x, y, x_train, x_test, y_train, y_test):
     rf_model = RandomForestRegressor()
+    scores = cross_val_score(rf_model, x, y, cv=10)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
-    mse = mean_squared_error(y_test, y_pred)
-    r_2 = r2_score(y_test, y_pred)
-    return rf_model, y_pred, mse, r_2
+    return rf_model, y_pred, scores.mean()
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
-def build_svm_regression(x_train, x_test, y_train, y_test):
+def build_svm_regression(x, y, x_train, x_test, y_train, y_test):
     SVM_regression = SVR(kernel='rbf')
+    scores = cross_val_score(SVM_regression, x, y, cv=10)
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
-    mse = mean_squared_error(y_test, y_pred)
-    r_2 = r2_score(y_test, y_pred)
-    return SVM_regression, y_pred, mse, r_2
+    return SVM_regression, y_pred, scores.mean()
 
 
-def build_knn_regression(x_train, x_test, y_train, y_test):
+def build_knn_regression(x, y, x_train, x_test, y_train, y_test):
     knn_regression = KNeighborsRegressor(n_neighbors=5, weights='uniform')
+    scores = cross_val_score(knn_regression, x, y, cv=10)
     knn_regression.fit(x_train, y_train)
     y_pred = knn_regression.predict(x_test)
-    mse = mean_squared_error(y_test, y_pred)
-    r_2 = r2_score(y_test, y_pred)
-    return knn_regression, y_pred, mse, r_2
+    return knn_regression, y_pred, scores.mean()
 
 
-def comparison_regression(model_list, file_name, x_train, x_test, y_train, y_test):
+def comparison_regression(model_list, file_name, x_all, y_all, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
         if x == 'RF':
-            rf_regression, y_pred, mse, r_2 = build_random_forest_regression(x_train, x_test, y_train, y_test)
+            rf_regression, y_pred, score = build_random_forest_regression(x_all, y_all, x_train, x_test, y_train, y_test)
         elif x == 'LR':
-            linear_regression, y_pred, mse, r_2 = build_linear_regression(x_train, x_test, y_train, y_test)
+            linear_regression, y_pred, score = build_linear_regression(x_all, y_all, x_train, x_test, y_train, y_test)
         elif x == 'SVM':
-            svm_regression, y_pred, mse, r_2 = build_svm_regression(x_train, x_test, y_train, y_test)
+            svm_regression, y_pred, score = build_svm_regression(x_all, y_all, x_train, x_test, y_train, y_test)
         elif x == 'KNN':
-            knn_regression, y_pred, mse, r_2 = build_knn_regression(x_train, x_test, y_train, y_test)
+            knn_regression, y_pred, score = build_knn_regression(x_all, y_all, x_train, x_test, y_train, y_test)
         else:
             continue
-        result.append([x, mse, r_2])
+        result.append([x, score])
         plot_scatter(y_test, y_pred, x, file_name)
     return result
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
-def build_logistic_regression(x_train, x_test, y_train, y_test):
+def build_logistic_regression(x, y, x_train, x_test, y_train, y_test):
     lr_model = linear_model.LogisticRegression(penalty='l2', dual=False, fit_intercept=True, n_jobs=-1)
     # penalty: default -- l2
+    scores = cross_val_score(lr_model, x, y, cv=10)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    return lr_model, y_pred, accuracy
+    return lr_model, y_pred, scores.mean()
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
-def build_random_forest_classifier(x_train, x_test, y_train, y_test):
+def build_random_forest_classifier(x, y, x_train, x_test, y_train, y_test):
     """
     random_grid = {'bootstrap': [True, False],
                    'max_depth': [10, 20, 40, 80, 100, None],
@@ -137,43 +135,43 @@ def build_random_forest_classifier(x_train, x_test, y_train, y_test):
     """
 
     rf_model = RandomForestClassifier(n_estimators=100, max_features=2)
+    scores = cross_val_score(rf_model, x, y, cv=10)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    return rf_model, y_pred, accuracy
+    return rf_model, y_pred, scores.mean()
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
-def build_svm_classifier(x_train, x_test, y_train, y_test):
+def build_svm_classifier(x, y, x_train, x_test, y_train, y_test):
     # Choose parameter and kernel
     SVM_regression = SVC(kernel='rbf')
+    scores = cross_val_score(SVM_regression, x, y, cv=10)
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    return SVM_regression, y_pred, accuracy
+    return SVM_regression, y_pred, scores.mean()
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
-def build_knn_classifier(x_train, x_test, y_train, y_test):
+def build_knn_classifier(x, y, x_train, x_test, y_train, y_test):
     knn_model = KNeighborsClassifier(n_neighbors=5, weights='uniform')
+    scores = cross_val_score(knn_model, x, y, cv=10)
     knn_model.fit(x_train, y_train)
     y_pred = knn_model.predict(x_test)
-    accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred)
-    return knn_model, y_pred, accuracy, report
+    return knn_model, y_pred, scores.mean(), report
 
 
-def comparison_classification(model_list, file_name, class_type, x_train, x_test, y_train, y_test):
+def comparison_classification(model_list, file_name, class_type, x_all, y_all, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
         if x == 'RF':
-            rf_classifier, y_pred, accuracy = build_random_forest_classifier(x_train, x_test, y_train, y_test)
+            rf_classifier, y_pred, accuracy = build_random_forest_classifier(x_all, y_all, x_train, x_test, y_train, y_test)
         elif x == 'LR':
-            logistic_model, y_pred, accuracy = build_logistic_regression(x_train, x_test, y_train, y_test)
+            logistic_model, y_pred, accuracy = build_logistic_regression(x_all, y_all, x_train, x_test, y_train, y_test)
         elif x == 'SVM':
-            svm_classifier, y_pred, accuracy = build_svm_classifier(x_train, x_test, y_train, y_test)
+            svm_classifier, y_pred, accuracy = build_svm_classifier(x_all, y_all, x_train, x_test, y_train, y_test)
         elif x == 'KNN':
-            knn_classifier, y_pred, accuracy, report = build_knn_classifier(x_train, x_test, y_train, y_test)
+            knn_classifier, y_pred, accuracy, report = build_knn_classifier(x_all, y_all, x_train, x_test, y_train, y_test)
         else:
             continue
         plot_confusion_matrix(y_test, y_pred, x, file_name, class_type)
