@@ -1,37 +1,16 @@
 import statsmodels.api as sm
-import matplotlib.pyplot as plt
-import dataframe_image as dfi
+
+
+def create_ols_variables(df):
+    y = df['CONC'].values
+    x = df.drop(['CONC'], axis=1, inplace=False).values
+    return x, y
 
 
 def build_ordinary_least_square(x, y):
     X = sm.add_constant(x)
     ols_model = sm.OLS(y, X).fit()
     pred = ols_model.predict(X)
-    return pred, ols_model.summary()
+    ols_report = ols_model.summary()
+    return pred, ols_report
 
-
-def save_knn_output_as_png(print_model, name):
-    plt.rc('figure', figsize=(10, 4))
-    # plt.text(0.01, 0.05, str(print_model), {'fontsize': 12})   # old approach
-    plt.text(0.01, 0.05, str(print_model), {'fontsize': 12}, fontproperties='monospace')
-      # approach improved by OP -> monospace!
-    plt.axis('off')
-    # plt.tight_layout()
-    plt.savefig(str(name) + '_output.png')
-    plt.close()
-
-
-def save_text_as_png(print_model, name):
-    plt.rc('figure', figsize=(10, 12))
-    # plt.text(0.01, 0.05, str(print_model), {'fontsize': 12})   # old approach
-    plt.text(0.01, 0.05, str(print_model), {'fontsize': 12}, fontproperties='monospace')
-      # approach improved by OP -> monospace!
-    plt.axis('off')
-    # plt.tight_layout()
-    plt.savefig(str(name) + '_output.png')
-    plt.close()
-
-
-def save_dataframe_as_png(df, name):
-    df_styled = df.style.background_gradient()
-    dfi.export(df_styled, str(name) + ".png")

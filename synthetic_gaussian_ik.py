@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.metrics import confusion_matrix
+
 from model.supervised_learning import *
 from model.ols import *
 import seaborn as sns
@@ -39,6 +41,8 @@ mp.show()
 data_without_collinear = data_after_dummy.drop(['TRADES', 'TAM_VWAP', 'TAM_TRADES', 'RTW_CONC',
                                                 'HFA_TRADES', 'HFA_IMS', 'HFA_VWAP', 'lnTAM_VOLUME'], axis=1,
                                                inplace=False)
+# data_without_collinear = data_after_dummy.drop(['RTW_IMS', 'TAM_IMS', 'TRADES', 'HFA_IMS', 'TAM_TRADES', 'TAM_VWAP'],
+#                                                axis=1, inplace=False)
 
 # ols
 y = data_without_collinear['CONC'].values
@@ -89,6 +93,39 @@ print(df_result1)
 print(df_result2)
 print(df_result3)
 print(df_all_result)
+
+svm_model, mse, r_2 = build_svm_regression(x_train_1, x_test_1, y1_train, y1_test)
+y_pred = svm_model.predict(x_test_1)
+
+plt.rcParams['figure.figsize'] = (6.0, 6.0)
+ideal_x = np.linspace(-2.5, 2.2, len(y1_test))
+ideal_y = np.linspace(-2.5, 2.2, len(y_pred))
+plt.scatter(y1_test, y_pred)
+plt.plot(ideal_x, ideal_y, 'red')
+plt.title('Synthetic Data: Actual Y vs Predicted Y')
+plt.xlabel('Actual Y')
+plt.ylabel('Predicted Y')
+plt.show()
+plt.close()
+
+
+rf_class, rf_accuracy1 = build_random_forest_classifier(x_train_2, x_test_2, y2_train, y2_test)
+y_pred = rf_class.predict(x_test_2)
+# Plot the Confusion Matrix
+plt.rcParams['figure.figsize'] = (6.0, 4.0)
+plt.title("Raw Data: Classification (B/S Label)")
+sns.heatmap(confusion_matrix(y2_test, y_pred), annot=True, fmt=".0f", annot_kws={"size": 12})
+plt.show()
+plt.close()
+
+svm_class, rf_accuracy2 = build_random_forest_classifier(x_train_3, x_test_3, y3_train, y3_test)
+y_pred = rf_class.predict(x_test_3)
+# Plot the Confusion Matrix
+plt.rcParams['figure.figsize'] = (6.0, 4.0)
+plt.title("Raw Data: Classification (E/F Label)")
+sns.heatmap(confusion_matrix(y3_test, y_pred), annot=True, fmt=".0f", annot_kws={"size": 12})
+plt.show()
+plt.close()
 
 save_dataframe_as_png(df_result1, "gaussian_ik_regression")
 save_dataframe_as_png(df_result2, "gaussian_ik_buy_sell_class")

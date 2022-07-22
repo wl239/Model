@@ -37,6 +37,18 @@ def standard(df):
     return (df - mu) / sigma
 
 
+def create_regression_variables(df):
+    y = df.iloc[:, 1].values
+    x = df.drop(2, axis=1, inplace=False).values  # 'CONC' column number: 1
+    return x, y
+
+
+def create_classification_variables(df, label_name):
+    y = df[label_name].values
+    x = norm_standard(df.drop(['BuySellType_S', 'InstrumentType_F'], axis=1, inplace=False)).values
+    return x, y
+
+
 def create_train_test_dataset(x, y):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)  # 70% training 30% test
     return x_train, x_test, y_train, y_test
@@ -48,7 +60,7 @@ def build_linear_regression(x_train, x_test, y_train, y_test):
     y_pred = lr_model.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
     r_2 = r2_score(y_test, y_pred)
-    return lr_model, mse, r_2
+    return lr_model, y_pred, mse, r_2
 
 
 def build_random_forest_regression(x_train, x_test, y_train, y_test):
@@ -57,7 +69,7 @@ def build_random_forest_regression(x_train, x_test, y_train, y_test):
     y_pred = rf_model.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
     r_2 = r2_score(y_test, y_pred)
-    return rf_model, mse, r_2
+    return rf_model, y_pred, mse, r_2
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
@@ -67,7 +79,7 @@ def build_svm_regression(x_train, x_test, y_train, y_test):
     y_pred = SVM_regression.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
     r_2 = r2_score(y_test, y_pred)
-    return SVM_regression, mse, r_2
+    return SVM_regression, y_pred, mse, r_2
 
 
 def build_knn_regression(x_train, x_test, y_train, y_test):
@@ -76,23 +88,24 @@ def build_knn_regression(x_train, x_test, y_train, y_test):
     y_pred = knn_regression.predict(x_test)
     mse = mean_squared_error(y_test, y_pred)
     r_2 = r2_score(y_test, y_pred)
-    return knn_regression, mse, r_2
+    return knn_regression, y_pred, mse, r_2
 
 
-def comparison_regression(model_list, x_train, x_test, y_train, y_test):
+def comparison_regression(model_list, file_name, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
         if x == 'RF':
-            rf_regression, mse, r_2 = build_random_forest_regression(x_train, x_test, y_train, y_test)
+            rf_regression, y_pred, mse, r_2 = build_random_forest_regression(x_train, x_test, y_train, y_test)
         elif x == 'LR':
-            linear_regression, mse, r_2 = build_linear_regression(x_train, x_test, y_train, y_test)
+            linear_regression, y_pred, mse, r_2 = build_linear_regression(x_train, x_test, y_train, y_test)
         elif x == 'SVM':
-            svm_regression, mse, r_2 = build_svm_regression(x_train, x_test, y_train, y_test)
+            svm_regression, y_pred, mse, r_2 = build_svm_regression(x_train, x_test, y_train, y_test)
         elif x == 'KNN':
-            knn_regression, mse, r_2 = build_knn_regression(x_train, x_test, y_train, y_test)
+            knn_regression, y_pred, mse, r_2 = build_knn_regression(x_train, x_test, y_train, y_test)
         else:
             continue
         result.append([x, mse, r_2])
+        plot_scatter(y_test, y_pred, x, file_name)
     return result
 
 
@@ -103,7 +116,7 @@ def build_logistic_regression(x_train, x_test, y_train, y_test):
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
-    return lr_model, accuracy
+    return lr_model, y_pred, accuracy
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
@@ -127,7 +140,7 @@ def build_random_forest_classifier(x_train, x_test, y_train, y_test):
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
-    return rf_model, accuracy
+    return rf_model, y_pred, accuracy
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
@@ -137,7 +150,7 @@ def build_svm_classifier(x_train, x_test, y_train, y_test):
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
-    return SVM_regression, accuracy
+    return SVM_regression, y_pred, accuracy
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
@@ -147,22 +160,23 @@ def build_knn_classifier(x_train, x_test, y_train, y_test):
     y_pred = knn_model.predict(x_test)
     accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred)
-    return knn_model, accuracy, report
+    return knn_model, y_pred, accuracy, report
 
 
-def comparison_classification(model_list, x_train, x_test, y_train, y_test):
+def comparison_classification(model_list, file_name, class_type, x_train, x_test, y_train, y_test):
     result = []
     for x in model_list:
         if x == 'RF':
-            rf_classifier, accuracy = build_random_forest_classifier(x_train, x_test, y_train, y_test)
+            rf_classifier, y_pred, accuracy = build_random_forest_classifier(x_train, x_test, y_train, y_test)
         elif x == 'LR':
-            logistic_model, accuracy = build_logistic_regression(x_train, x_test, y_train, y_test)
+            logistic_model, y_pred, accuracy = build_logistic_regression(x_train, x_test, y_train, y_test)
         elif x == 'SVM':
-            svm_classifier, accuracy = build_svm_classifier(x_train, x_test, y_train, y_test)
+            svm_classifier, y_pred, accuracy = build_svm_classifier(x_train, x_test, y_train, y_test)
         elif x == 'KNN':
-            knn_classifier, accuracy, report = build_knn_classifier(x_train, x_test, y_train, y_test)
+            knn_classifier, y_pred, accuracy, report = build_knn_classifier(x_train, x_test, y_train, y_test)
         else:
             continue
+        plot_confusion_matrix(y_test, y_pred, x, file_name, class_type)
         result.append([x, accuracy])
     return result
 
