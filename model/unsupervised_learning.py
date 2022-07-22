@@ -10,10 +10,16 @@ def standard(df):
     return (df - mu) / sigma
 
 
+def create_pca_variables(df):
+    y = df['CONC']
+    x = df.drop(['CONC'], axis=1, inplace=False)
+    return x, y
+
+
 def build_principal_component_analysis(df, n_component):
-    pca = PCA(n_components=n_component)
-    principalComponents = pca.fit_transform(df)
-    principal_df = pd.DataFrame(data=principalComponents)
-    t_value_array = pca.explained_variance_ratio_
+    pca_model = PCA(n_components=n_component)
+    data_after_pca = pca_model.fit_transform(df)
+    pca_df = pd.DataFrame(data=data_after_pca)
+    t_value_array = pca_model.explained_variance_ratio_
     t_value = np.sum(t_value_array)
-    return principalComponents, principal_df, t_value
+    return pca_model, pca_df, t_value

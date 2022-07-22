@@ -9,7 +9,7 @@ from sklearn.metrics import confusion_matrix
 
 def save_report_as_png(ols_report, filename):
     filepath = 'image/' + str(filename) + '/' + str(filename) + '_ols_report.png'
-    print(filepath)
+    # print(filepath)
     plt.rc('figure', figsize=(10, 12))
     # plt.text(0.01, 0.05, str(print_model), {'fontsize': 12})   # old approach
     plt.text(0.01, 0.05, str(ols_report), {'fontsize': 12}, fontproperties='monospace')
@@ -22,7 +22,7 @@ def save_report_as_png(ols_report, filename):
 
 def save_report_as_text(ols_report, filename):
     filepath = 'image/' + str(filename) + '/' + str(filename) + '_ols_report.txt'
-    print(filepath)
+    # print(filepath)
     with open(filepath, 'w') as fh:
         fh.write(ols_report.as_text())
 

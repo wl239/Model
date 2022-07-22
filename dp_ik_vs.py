@@ -11,8 +11,8 @@ from model.data_visualize import *
 
 df = pd.read_excel('dp_ik_data.xlsx')      # <================================================================================ CHANGE !!!
 cleaned_df = clean_data(df)
-print(cleaned_df.info())
-print(cleaned_df)
+# print(cleaned_df.info())
+# print(cleaned_df)
 
 file_path = './image/dp_ik/dp_ik'   # <================================================================================ CHANGE !!!
 get_correlation_matrix(cleaned_df, file_path + '_corr.png')
@@ -67,31 +67,28 @@ save_dataframe_as_png(df_result2, file_path + '_buy_sell_class')
 save_dataframe_as_png(df_result3, file_path + '_E_F_class')
 
 
-# # Unsupervised Learning
-# # PCA
-# print("===================================")
-# print("***********************************")
-# pca_x = data_after_dummy.drop(['CONC'], axis=1, inplace=False)
-# pca_y = data_after_dummy['CONC']
-# n_component = 5
-# principalComponents, principal_df, t_value = build_principal_component_analysis(standard(pca_x), n_component)
-# print("T value: %f" % t_value)  # when n = 5, T value: 0.659596
-# principal_df.columns = ['pc1', 'pc2', 'pc3', 'pc4', 'pc5']
-# print(principal_df)
-#
-# # colors = ['red', 'black', 'orange', 'green', 'blue']
-# # plt.figure()
-# # for i in [0, 1, 2, 3, 4]:
-# #     plt.scatter(principal_df[y == i, 0], principal_df[y == i, 1], alpha=.7, c=colors[i], label=principal_df.columns[i])
-# # plt.legend()
-# # plt.title('PCA of Raw Dataset')
-# # plt.show()
-# # plt.close()
-#
-# X_pca = principal_df.values
-# y_pca = pca_y.values
-# x_pca_train, x_pca_test, y_pca_train, y_pca_test = create_train_test_dataset(X_pca, y_pca)
-# result4 = comparison_regression(model_list, x_pca_train, x_pca_test, y_pca_train, y_pca_test)
-#
-# df_result4 = pd.DataFrame(result4, columns=['Method', 'MSE', 'R Square']).set_index(['Method'])
-# save_dataframe_as_png(df_result4, "pca_raw_ik_regression")
+# Unsupervised Learning -- PCA
+x_pca, y_pca = create_pca_variables(cleaned_df)
+
+n_component = 5
+pca_model, pca_df, t_value = build_principal_component_analysis(standard(x_pca), n_component)
+print("T value: %f" % t_value)  # when n = 5, T value: 0.513933, explained variance ratio
+pca_df.columns = ['pc1', 'pc2', 'pc3', 'pc4', 'pc5']
+pca_df.to_excel('pca_dp_ik.xlsx')         # <=================================================================================== CHANGE !!!
+
+# colors = ['red', 'black', 'orange', 'green', 'blue']
+# plt.figure()
+# for i in [0, 1, 2, 3, 4]:
+# plt.scatter(principal_df[y == i, 0], principal_df[y == i, 1], alpha=.7, c=colors[i], label=principal_df.columns[i])
+# plt.legend()
+# plt.title('PCA of Raw Dataset')
+# plt.show()
+# plt.close()
+
+x_pca = pca_df.values
+y_pca = y_pca.values
+x_pca_train, x_pca_test, y_pca_train, y_pca_test = create_train_test_dataset(x_pca, y_pca)
+result4 = comparison_regression(model_list, 'pca_dp_ik', x_pca, y_pca, x_pca_train, x_pca_test, y_pca_train, y_pca_test)  # <=================================================================================== CHANGE !!!
+
+df_result4 = pd.DataFrame(result4, columns=['Method', 'Goodness of fit']).set_index(['Method'])
+save_dataframe_as_png(df_result4, "image/pca_dp_ik/pca_dp_ik_regression")     # <=================================================================================== CHANGE !!!
