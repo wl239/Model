@@ -9,7 +9,7 @@ from model.data_visualize import *
 # end_time = time.time()
 # duration = end_time - start_time
 
-df = pd.read_excel('dp_ik_data.xlsx')      # <================================================================================ CHANGE !!!
+df = pd.read_excel('dp_ik_data1.xlsx')      # <================================================================================ CHANGE !!!
 cleaned_df = clean_data(df)
 # print(cleaned_df.info())
 # print(cleaned_df)
