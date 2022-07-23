@@ -14,12 +14,14 @@ cleaned_df = clean_data(df)
 # print(cleaned_df.info())
 # print(cleaned_df)
 
+
 file_path = './image/dp_ik/dp_ik'   # <================================================================================ CHANGE !!!
 get_correlation_matrix(cleaned_df, file_path + '_corr.png')
 
 # Observe Correlation Matrix
-drop_columns = ['RTW_IMS', 'TAM_IMS', 'TRADES', 'IMS', 'RTW_TRADES', 'VWAP', 'TAM_VWAP']
-df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
+# drop_columns = ['IMS', 'TAM_VOLUME', 'TAM_IMS', 'RTW_TRADES']
+# df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
+df_without_collinear = cleaned_df
 
 # OLS Estimators
 x_ols, y_ols = create_ols_variables(df_without_collinear)  # Create OLS variables
@@ -72,7 +74,7 @@ x_pca, y_pca = create_pca_variables(cleaned_df)
 
 n_component = 5
 pca_model, pca_df, t_value = build_principal_component_analysis(standard(x_pca), n_component)
-print("T value: %f" % t_value)  # when n = 5, T value: 0.513933, explained variance ratio
+print("T value: %f" % t_value)  # when n = 5, T value: 0.526370, explained variance ratio
 pca_df.columns = ['pc1', 'pc2', 'pc3', 'pc4', 'pc5']
 pca_df.to_excel('pca_dp_ik.xlsx')         # <=================================================================================== CHANGE !!!
 

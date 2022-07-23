@@ -61,7 +61,8 @@ def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
     scores = cross_val_score(lr_model, x, y, cv=10)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
-    return lr_model, y_pred, scores.mean()
+    r2 = r2_score(y_test, y_pred)
+    return lr_model, y_pred, r2
 
 
 def build_random_forest_regression(x, y, x_train, x_test, y_train, y_test):
@@ -69,7 +70,8 @@ def build_random_forest_regression(x, y, x_train, x_test, y_train, y_test):
     scores = cross_val_score(rf_model, x, y, cv=10)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
-    return rf_model, y_pred, scores.mean()
+    r2 = r2_score(y_test, y_pred)
+    return rf_model, y_pred, r2
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
@@ -78,7 +80,8 @@ def build_svm_regression(x, y, x_train, x_test, y_train, y_test):
     scores = cross_val_score(SVM_regression, x, y, cv=10)
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
-    return SVM_regression, y_pred, scores.mean()
+    r2 = r2_score(y_test, y_pred)
+    return SVM_regression, y_pred, r2
 
 
 def build_knn_regression(x, y, x_train, x_test, y_train, y_test):
@@ -86,7 +89,8 @@ def build_knn_regression(x, y, x_train, x_test, y_train, y_test):
     scores = cross_val_score(knn_regression, x, y, cv=10)
     knn_regression.fit(x_train, y_train)
     y_pred = knn_regression.predict(x_test)
-    return knn_regression, y_pred, scores.mean()
+    r2 = r2_score(y_test, y_pred)
+    return knn_regression, y_pred, r2
 
 
 def comparison_regression(model_list, file_name, x_all, y_all, x_train, x_test, y_train, y_test):
