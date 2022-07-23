@@ -15,8 +15,9 @@ file_path = './image/raw_ik/raw_ik'   # <=======================================
 get_correlation_matrix(cleaned_df, file_path + '_corr.png')
 
 # Observe Correlation Matrix
-drop_columns = ['RTW_IMS', 'TAM_IMS', 'TRADES', 'IMS', 'RTW_TRADES', 'VWAP', 'TAM_VWAP']
-df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
+# drop_columns = ['RTW_IMS', 'TAM_IMS', 'TRADES', 'IMS', 'RTW_TRADES', 'VWAP', 'TAM_VWAP']
+# df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
+df_without_collinear = cleaned_df
 
 # OLS Estimators
 x_ols, y_ols = create_ols_variables(df_without_collinear)  # Create OLS variables
