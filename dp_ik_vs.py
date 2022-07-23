@@ -9,7 +9,7 @@ from model.data_visualize import *
 # end_time = time.time()
 # duration = end_time - start_time
 
-df = pd.read_excel('dp_ik_data1.xlsx')      # <================================================================================ CHANGE !!!
+df = pd.read_excel('dp_ik_data2.xlsx')      # <================================================================================ CHANGE !!!
 cleaned_df = clean_data(df)
 # print(cleaned_df.info())
 # print(cleaned_df)
@@ -19,9 +19,9 @@ file_path = './image/dp_ik/dp_ik'   # <=========================================
 get_correlation_matrix(cleaned_df, file_path + '_corr.png')
 
 # Observe Correlation Matrix
-# drop_columns = ['IMS', 'TAM_VOLUME', 'TAM_IMS', 'RTW_TRADES']
-# df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
-df_without_collinear = cleaned_df
+drop_columns = ['IMS', 'TAM_VOLUME', 'TAM_IMS', 'RTW_TRADES']
+df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
+# df_without_collinear = cleaned_df   ==> 效果不错
 
 # OLS Estimators
 x_ols, y_ols = create_ols_variables(df_without_collinear)  # Create OLS variables

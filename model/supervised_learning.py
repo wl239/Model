@@ -52,13 +52,13 @@ def create_classification_variables(df, label_name):
 
 
 def create_train_test_dataset(x, y):
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)  # 70% training 30% test
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)  # 70% training 30% test # random_state=1
     return x_train, x_test, y_train, y_test
 
 
 def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
     lr_model = linear_model.Ridge(fit_intercept=True, copy_X=True)
-    scores = cross_val_score(lr_model, x, y, cv=10)
+    scores = cross_val_score(lr_model, x, y, cv=5)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
     r2 = r2_score(y_test, y_pred)
@@ -67,7 +67,7 @@ def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
 
 def build_random_forest_regression(x, y, x_train, x_test, y_train, y_test):
     rf_model = RandomForestRegressor()
-    scores = cross_val_score(rf_model, x, y, cv=10)
+    scores = cross_val_score(rf_model, x, y, cv=5)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
     r2 = r2_score(y_test, y_pred)
