@@ -52,7 +52,7 @@ def standard(df):
 
 def create_regression_variables(df):
     y = norm_standard_one(df['CONC'].values)
-    # print(y)
+    print(y)
     x = norm_standard(df.drop(['CONC'], axis=1, inplace=False)).values
     return x, y
 
@@ -74,7 +74,7 @@ def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
     r2 = r2_score(y_test, y_pred)
-    return lr_model, y_pred, r2
+    return lr_model, y_pred, scores.mean()
 
 
 def build_random_forest_regression(x, y, x_train, x_test, y_train, y_test):
@@ -130,7 +130,8 @@ def build_logistic_regression(x, y, x_train, x_test, y_train, y_test):
     scores = cross_val_score(lr_model, x, y, cv=5)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
-    return lr_model, y_pred, scores.mean()
+    accuracy = accuracy_score(y_test, y_pred)
+    return lr_model, y_pred, accuracy
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
@@ -154,7 +155,8 @@ def build_random_forest_classifier(x, y, x_train, x_test, y_train, y_test):
     scores = cross_val_score(rf_model, x, y, cv=5)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
-    return rf_model, y_pred, scores.mean()
+    accuracy = accuracy_score(y_test, y_pred)
+    return rf_model, y_pred, accuracy
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html

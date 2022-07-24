@@ -74,7 +74,7 @@ x_pca, y_pca = create_pca_variables(cleaned_df)
 
 n_component = 5
 pca_model, pca_df, t_value = build_principal_component_analysis(standard(x_pca), n_component)
-print("T value: %f" % t_value)  # when n = 5, T value: 0.526370, explained variance ratio
+print("T value: %f" % t_value)  # when n = 5, T value: 0.536688, explained variance ratio
 pca_df.columns = ['pc1', 'pc2', 'pc3', 'pc4', 'pc5']
 pca_df.to_excel('pca_dp_ik.xlsx')         # <=================================================================================== CHANGE !!!
 

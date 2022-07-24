@@ -8,7 +8,7 @@ from model.data_visualize import *
 # end_time = time.time()
 # duration = end_time - start_time
 
-df = pd.read_excel('anon_ik_data.xlsx')      # <================================================================================ CHANGE !!!
+df = pd.read_excel('anon_cleaned_ik.xlsx')      # <================================================================================ CHANGE !!!
 cleaned_df = clean_data(df)
 
 file_path = './image/anon_ik/anon_ik'   # <================================================================================ CHANGE !!!
@@ -70,7 +70,7 @@ x_pca, y_pca = create_pca_variables(cleaned_df)
 
 n_component = 5
 pca_model, pca_df, t_value = build_principal_component_analysis(standard(x_pca), n_component)
-print("T value: %f" % t_value)  # when n = 5, T value: 0.689028, explained variance ratio
+print("T value: %f" % t_value)  # when n = 5, 0.664694, explained variance ratio
 pca_df.columns = ['pc1', 'pc2', 'pc3', 'pc4', 'pc5']
 pca_df.to_excel('pca_anon_ik.xlsx')         # <=================================================================================== CHANGE !!!
 

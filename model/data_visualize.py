@@ -44,6 +44,8 @@ def save_dataframe_as_png(df, name):
 
 
 def plot_scatter(x, y, model_name, file_name):
+    print("*" * 70)
+    print(y)
     file_path = 'image/' + str(file_name) + '/' + str(file_name) + '_scatter_' + str(model_name) + '.png'
     plt.rcParams['figure.figsize'] = (6.0, 6.0)
     min_x = min_y = min(floor(min(x)), floor(min(y)))
@@ -56,6 +58,7 @@ def plot_scatter(x, y, model_name, file_name):
     plt.xlabel('Actual Y')
     plt.ylabel('Predicted Y')
     plt.savefig(file_path)
+    plt.show()
     plt.close()
 
 
