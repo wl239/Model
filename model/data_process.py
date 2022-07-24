@@ -25,6 +25,7 @@ def clean_data(df):
     # log Volume
     temp_data['VOLUME'] = temp_data['VOLUME'].apply(np.log)
     # print(temp_data)
+    print(temp_data)
 
     # Dummy Variables
     BSDummy = pd.get_dummies(df_after_nan['BUY_SELL'], prefix="BuySellType", prefix_sep="_", drop_first=True)

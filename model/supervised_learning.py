@@ -16,6 +16,17 @@ from sklearn.preprocessing import StandardScaler
 from model.data_visualize import *
 
 
+def norm_standard_one(df):
+    # Normalization
+    _range = np.max(df) - np.min(df)
+    normal = (df - np.min(df))/_range
+
+    # Standardization
+    mu = np.mean(normal, axis=0)
+    sigma = np.std(df, axis=0)
+    return (df - mu) / sigma
+
+
 def norm_standard(df):
     # Normalization
     #   _range = np.max(df) - np.min(df)
@@ -40,8 +51,9 @@ def standard(df):
 
 
 def create_regression_variables(df):
-    y = df.iloc[:, 1].values
-    x = df.drop(1, axis=1, inplace=False).values  # 'CONC' column number: 1
+    y = norm_standard_one(df['CONC'].values)
+    # print(y)
+    x = norm_standard(df.drop(['CONC'], axis=1, inplace=False)).values
     return x, y
 
 
@@ -57,8 +69,8 @@ def create_train_test_dataset(x, y):
 
 
 def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
-    lr_model = linear_model.Ridge(fit_intercept=True, copy_X=True)
-    scores = cross_val_score(lr_model, x, y, cv=5)
+    lr_model = linear_model.LinearRegression(fit_intercept=True)
+    scores = cross_val_score(linear_model.LinearRegression(), x, y, cv=5)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
     r2 = r2_score(y_test, y_pred)
@@ -67,30 +79,30 @@ def build_linear_regression(x, y, x_train, x_test, y_train, y_test):
 
 def build_random_forest_regression(x, y, x_train, x_test, y_train, y_test):
     rf_model = RandomForestRegressor()
-    scores = cross_val_score(rf_model, x, y, cv=5)
+    scores = cross_val_score(RandomForestRegressor(), x, y, cv=5)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
     r2 = r2_score(y_test, y_pred)
-    return rf_model, y_pred, r2
+    return rf_model, y_pred, scores.mean()
 
 
 # https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html
 def build_svm_regression(x, y, x_train, x_test, y_train, y_test):
     SVM_regression = SVR(kernel='rbf')
-    scores = cross_val_score(SVM_regression, x, y, cv=10)
+    scores = cross_val_score(SVR(kernel='rbf'), x, y, cv=5)
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
     r2 = r2_score(y_test, y_pred)
-    return SVM_regression, y_pred, r2
+    return SVM_regression, y_pred, scores.mean()
 
 
 def build_knn_regression(x, y, x_train, x_test, y_train, y_test):
     knn_regression = KNeighborsRegressor(n_neighbors=5, weights='uniform')
-    scores = cross_val_score(knn_regression, x, y, cv=10)
+    scores = cross_val_score(KNeighborsRegressor(n_neighbors=5, weights='uniform'), x, y, cv=5)
     knn_regression.fit(x_train, y_train)
     y_pred = knn_regression.predict(x_test)
     r2 = r2_score(y_test, y_pred)
-    return knn_regression, y_pred, r2
+    return knn_regression, y_pred, scores.mean()
 
 
 def comparison_regression(model_list, file_name, x_all, y_all, x_train, x_test, y_train, y_test):
@@ -115,7 +127,7 @@ def comparison_regression(model_list, file_name, x_all, y_all, x_train, x_test, 
 def build_logistic_regression(x, y, x_train, x_test, y_train, y_test):
     lr_model = linear_model.LogisticRegression(penalty='l2', dual=False, fit_intercept=True, n_jobs=-1)
     # penalty: default -- l2
-    scores = cross_val_score(lr_model, x, y, cv=10)
+    scores = cross_val_score(lr_model, x, y, cv=5)
     lr_model.fit(x_train, y_train)
     y_pred = lr_model.predict(x_test)
     return lr_model, y_pred, scores.mean()
@@ -139,7 +151,7 @@ def build_random_forest_classifier(x, y, x_train, x_test, y_train, y_test):
     """
 
     rf_model = RandomForestClassifier(n_estimators=100, max_features=2)
-    scores = cross_val_score(rf_model, x, y, cv=10)
+    scores = cross_val_score(rf_model, x, y, cv=5)
     rf_model.fit(x_train, y_train)
     y_pred = rf_model.predict(x_test)
     return rf_model, y_pred, scores.mean()
@@ -149,7 +161,7 @@ def build_random_forest_classifier(x, y, x_train, x_test, y_train, y_test):
 def build_svm_classifier(x, y, x_train, x_test, y_train, y_test):
     # Choose parameter and kernel
     SVM_regression = SVC(kernel='rbf')
-    scores = cross_val_score(SVM_regression, x, y, cv=10)
+    scores = cross_val_score(SVM_regression, x, y, cv=5)
     SVM_regression.fit(x_train, y_train)
     y_pred = SVM_regression.predict(x_test)
     return SVM_regression, y_pred, scores.mean()
@@ -158,7 +170,7 @@ def build_svm_classifier(x, y, x_train, x_test, y_train, y_test):
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
 def build_knn_classifier(x, y, x_train, x_test, y_train, y_test):
     knn_model = KNeighborsClassifier(n_neighbors=5, weights='uniform')
-    scores = cross_val_score(knn_model, x, y, cv=10)
+    scores = cross_val_score(knn_model, x, y, cv=5)
     knn_model.fit(x_train, y_train)
     y_pred = knn_model.predict(x_test)
     report = classification_report(y_test, y_pred)

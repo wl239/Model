@@ -15,8 +15,6 @@ file_path = './image/raw_ik/raw_ik'   # <=======================================
 get_correlation_matrix(cleaned_df, file_path + '_corr.png')
 
 # Observe Correlation Matrix
-# drop_columns = ['RTW_IMS', 'TAM_IMS', 'TRADES', 'IMS', 'RTW_TRADES', 'VWAP', 'TAM_VWAP']
-# df_without_collinear = cleaned_df.drop(drop_columns, axis=1, inplace=False)
 df_without_collinear = cleaned_df
 
 # OLS Estimators
@@ -25,12 +23,14 @@ pred, ols_report = build_ordinary_least_square(x_ols, y_ols)  # OLS regression
 save_report_as_png(ols_report, 'raw_ik')  # Save ols summary as a picture   # <================================================================================ CHANGE !!!
 save_report_as_text(ols_report, 'raw_ik')  # Save ols summary as a text     # <================================================================================ CHANGE !!!
 
+# Observe Correlation Matrix
+drop_columns = ['IMS', 'HFA_TRADES', 'RTW_VWAP', 'TAM_IMS', 'RTW_TRADES', 'TAM_VWAP', 'BuySellType_S']
+df_regression = cleaned_df.drop(drop_columns, axis=1, inplace=False)
 
 # Supervised Learning
-normalized_data = norm_standard(df_without_collinear)  # Data need to be normalized and standardized
 
 # Create x and y variables
-x_reg, y_reg = create_regression_variables(normalized_data)  # y is concentration rate, x -- other variables
+x_reg, y_reg = create_regression_variables(df_regression)  # y is concentration rate, x -- other variables
 x_buy_class, y_buy_class = create_classification_variables(df_without_collinear,
                                                            'BuySellType_S')  # Label: 'B' is 0, 'S' is 1
 x_equity_class, y_equity_class = create_classification_variables(df_without_collinear,
